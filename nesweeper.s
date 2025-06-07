@@ -1602,7 +1602,7 @@ place_mines:
       bmi place_mines_loop
   rts
 
-.include "maths.s"
+.include "math.s"
 
 ; -------------------- THINGS --------------------
 
