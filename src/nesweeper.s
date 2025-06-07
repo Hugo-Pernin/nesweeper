@@ -20,8 +20,8 @@
   result1: .res 1
   result2: .res 1
   temp: .res 1
-  ; Gamepad/buttons
-  gamepad: .res 1
+  ; Controller/buttons
+  controller: .res 1
   last_frame_buttons: .res 1
   pressed_buttons: .res 1
   released_buttons: .res 1
@@ -168,7 +168,7 @@ load_main_menu_background:
 lda #1
 sta main_menu_selection
 main_menu_loop:
-  jsr read_gamepad
+  jsr read_controller
   jmp main_menu_loop
 
 start_game:
@@ -303,7 +303,7 @@ sta SecondCounter
 ; -------------------- Main loop of the game --------------------
 
 forever:
-  jsr read_gamepad
+  jsr read_controller
   ;lda FrameCounter
   ;cmp #$ff
   ;bne :+
@@ -313,82 +313,7 @@ forever:
   jsr draw_cursor
   jmp forever
 
-; Read gamepad inputs
-read_gamepad:
-  ; Initialize the output memory
-  lda #1
-  sta gamepad
-
-  ; Send the latch pulse down to the 4021
-  sta $4016
-  lda #0
-  sta $4016
-
-  ; Read the buttons from the data line
-gamepad_loop:
-  lda $4016
-  lsr a
-  rol gamepad
-  bcc gamepad_loop
-
-  ; newly pressed buttons: not held last frame, and held now
-  lda last_frame_buttons
-  eor #%11111111
-  and gamepad
-  sta pressed_buttons
-
-  ; newly released buttons: not held now, and held last frame
-  lda gamepad
-  eor #%11111111
-  and last_frame_buttons
-  sta released_buttons
-
-  ; Check which buttons are pressed
-  lda pressed_buttons
-  and #%10000000
-  beq :+
-    jsr a_pushed
-  :
-  lda pressed_buttons
-  and #%01000000
-  beq :+
-    jsr b_pushed
-  :
-  lda pressed_buttons
-  and #%00100000
-  beq :+
-    jsr select_pushed
-  :
-  lda pressed_buttons
-  and #%00010000
-  beq :+
-    jsr start_pushed
-  :
-  lda pressed_buttons
-  and #%00001000
-  beq :+
-    jsr up_pushed
-  :
-  lda pressed_buttons
-  and #%00000100
-  beq :+
-    jsr down_pushed
-  :
-  lda pressed_buttons
-  and #%00000010
-  beq :+
-    jsr left_pushed
-  :
-  lda pressed_buttons
-  and #%00000001
-  beq :+
-    jsr right_pushed
-  :
-
-  lda gamepad
-  sta last_frame_buttons
-
-  rts
+.include "read_controller.s"
 
 b_pushed:
   ; Checks if we are in the main menu
