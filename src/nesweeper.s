@@ -1306,7 +1306,7 @@ update_clock:
   jsr render_fourth_digit
   rts
 
-.include "digits.s"
+.include "view/digits.s"
 
 ; Resets FrameCounter and increments SecondCounter every 60 frames
 nmi:
