@@ -1563,20 +1563,7 @@ wait_for_vblank:
   beq @loop
   rts
 
-; https://codebase64.org/doku.php?id=base:small_fast_8-bit_prng
-; Takes the number in param1 and use it to generate a new one in result1
-rng:
-  lda param1
-  beq doEor
-  asl ; shift left
-  beq noEor ; if the input was $80, skip the EOR
-  bcc noEor
-    ; if the high bit was set
-    doEor:
-      eor #$1d
-  noEor:
-    sta result1
-  rts
+.include "random.s"
 
 ; Places all the mines on the field
 place_mines:
