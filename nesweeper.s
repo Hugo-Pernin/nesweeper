@@ -1602,61 +1602,7 @@ place_mines:
       bmi place_mines_loop
   rts
 
-
-
-
-; -------------------- MATHS --------------------
-
-; Does a multiplication
-; Doesn't modify parameters
-; param1 & param2 are the two factors
-; result is stored in result1 (max of 255)
-multiplication:
-  ldx param1
-  ; checks if one parameter is equal to 0
-  lda param1
-  cmp #0
-  bne :+
-    lda #0
-    jmp multiplication_end
-  :
-  lda param2
-  cmp #0
-  bne :+
-    lda #0
-    jmp multiplication_end
-  :
-  lda #0
-multiplication_loop:
-  clc
-  adc param2
-  dex
-  cpx #0
-  bne multiplication_loop
-multiplication_end:
-  sta result1
-  rts
-
-; Does an euclidean division between two 1-byte numbers
-; Doesn't modify parameters
-; dividend = param1
-; divisor = param2
-; quotient = result1
-; remainder = result2
-division:
-  lda #0
-  sta result1
-  lda param1
-division_loop:
-  cmp param2
-  bmi :+ ; if param1 >= param2
-    inc result1
-    sec
-    sbc param2
-    jmp division_loop
-  :
-  sta result2
-  rts
+.include "maths.s"
 
 ; -------------------- THINGS --------------------
 
