@@ -32,42 +32,42 @@ controller_loop:
   lda pressed_buttons
   and #%10000000
   beq :+
-    jsr a_pushed
+    jsr a_pressed
   :
   lda pressed_buttons
   and #%01000000
   beq :+
-    jsr b_pushed
+    jsr b_pressed
   :
   lda pressed_buttons
   and #%00100000
   beq :+
-    jsr select_pushed
+    jsr select_pressed
   :
   lda pressed_buttons
   and #%00010000
   beq :+
-    jsr start_pushed
+    jsr start_pressed
   :
   lda pressed_buttons
   and #%00001000
   beq :+
-    jsr up_pushed
+    jsr up_pressed
   :
   lda pressed_buttons
   and #%00000100
   beq :+
-    jsr down_pushed
+    jsr down_pressed
   :
   lda pressed_buttons
   and #%00000010
   beq :+
-    jsr left_pushed
+    jsr left_pressed
   :
   lda pressed_buttons
   and #%00000001
   beq :+
-    jsr right_pushed
+    jsr right_pressed
   :
 
   lda controller
