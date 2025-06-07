@@ -59,7 +59,7 @@
   .addr 0
 
 .segment "CHR"
-  .incbin "patterntable.chr" ; Pattern table 0
+  .incbin "assets/patterntable.chr" ; Pattern table 0
 
 ; Main code segment for the program
 .segment "CODE"
@@ -1591,6 +1591,6 @@ place_mines:
 
 .include "math.s"
 
-.include "game_background.s"
+.include "assets/game_background.s"
 
-.include "main_menu_background.s"
+.include "assets/main_menu_background.s"
