@@ -1,5 +1,5 @@
 {
   "executable": "C:\\cc65\\bin\\cl65",
-  "input": "nesweeper.s",
+  "input": "src/nesweeper.s",
   "params": "--verbose --target nes -o out/nesweeper.nes"
 }
