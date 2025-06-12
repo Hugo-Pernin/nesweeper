@@ -63,6 +63,17 @@
 ; Main code segment for the program
 .segment "CODE"
 
+; PPU registers
+PPUCTRL = $2000
+PPUMASK = $2001
+PPUSTATUS = $2002
+OAMADDR = $2003
+OAMDATA = $2004
+PPUSCROLL = $2005
+PPUADDR = $2006
+PPUDATA = $2007
+OAMDMA = $4014
+
 reset:
   sei		; disable IRQs
   cld		; disable decimal mode
@@ -71,13 +82,13 @@ reset:
   ldx #$ff 	; Set up stack
   txs		;  .
   inx		; now X = 0
-  stx $2000	; disable NMI
-  stx $2001 	; disable rendering
+  stx PPUCTRL	; disable NMI
+  stx PPUMASK 	; disable rendering
   stx $4010 	; disable DMC IRQs
 
 ;; first wait for vblank to make sure PPU is ready
 vblankwait1:
-  bit $2002
+  bit PPUSTATUS
   bpl vblankwait1
 
 clear_memory:
@@ -95,23 +106,23 @@ clear_memory:
 
 ;; second wait for vblank, PPU is ready after this
 vblankwait2:
-  bit $2002
+  bit PPUSTATUS
   bpl vblankwait2
 
 main: ; useful?
 main_menu:
 load_main_menu_palettes:
-  lda $2002 ; useful?
+  lda PPUSTATUS ; useful?
 
-  lda #$3f
-  sta $2006
-  lda #$00
-  sta $2006
+  lda #>$3f00
+  sta PPUADDR
+  lda #<$3f00
+  sta PPUADDR
 
   ldx #$00
 @loop:
   lda main_menu_palettes, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$20
   bne @loop
@@ -119,35 +130,35 @@ load_main_menu_palettes:
 load_main_menu_background:
   jsr disable_rendering
 
-  lda $2002 ; useful?
+  lda PPUSTATUS ; useful?
 
-  lda #$20
-  sta $2006
-  lda #$00
-  sta $2006
+  lda #>$2000
+  sta PPUADDR
+  lda #<$2000
+  sta PPUADDR
 
   ldx #$00
 @loop1:
   lda main_menu_background1, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$00
   bne @loop1
 @loop2:
   lda main_menu_background2, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$00
   bne @loop2
 @loop3:
   lda main_menu_background3, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$00
   bne @loop3
 @loop4:
   lda main_menu_background4, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$c0
   bne @loop4
@@ -155,13 +166,13 @@ load_main_menu_background:
   ldx #$00
 @loop5:
   lda main_menu_attributetable, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$40
   bne @loop5
 
   lda #%10000000 ; Enable NMI
-  sta $2000
+  sta PPUCTRL
   jsr enable_rendering
 
 lda #1
@@ -172,17 +183,17 @@ main_menu_loop:
 
 start_game:
 load_palettes:
-  lda $2002 ; useful?
+  lda PPUSTATUS ; useful?
 
-  lda #$3f
-  sta $2006
-  lda #$00
-  sta $2006
+  lda #>$3f00
+  sta PPUADDR
+  lda #<$3f00
+  sta PPUADDR
 
   ldx #$00
 @loop:
   lda palettes, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$20
   bne @loop
@@ -190,35 +201,35 @@ load_palettes:
 load_background:
   jsr disable_rendering
 
-  lda $2002 ; useful?
+  lda PPUSTATUS ; useful?
 
-  lda #$20
-  sta $2006
-  lda #$00
-  sta $2006
+  lda #>$2000
+  sta PPUADDR
+  lda #<$2000
+  sta PPUADDR
 
   ldx #$00
 @loop1:
   lda background1, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$00
   bne @loop1
 @loop2:
   lda background2, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$00
   bne @loop2
 @loop3:
   lda background3, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$00
   bne @loop3
 @loop4:
   lda background4, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$c0
   bne @loop4
@@ -226,13 +237,13 @@ load_background:
   ldx #$00
 @loop5:
   lda attributetable, x
-  sta $2007
+  sta PPUDATA
   inx
   cpx #$40
   bne @loop5
 
   lda #%10000000 ; Enable NMI
-  sta $2000
+  sta PPUCTRL
   jsr enable_rendering
 
 ; Initialize the variables
@@ -669,38 +680,38 @@ draw_main_menu_cursor:
   jsr disable_rendering
 
   ; Delete the other cursors
-  lda #$22
-  sta $2006
-  lda #$0c
-  sta $2006
+  lda #>$220c
+  sta PPUADDR
+  lda #<$220c
+  sta PPUADDR
   lda #$00
-  sta $2007
-  lda #$22
-  sta $2006
-  lda #$4c
-  sta $2006
+  sta PPUDATA
+  lda #>$224c
+  sta PPUADDR
+  lda #<$224c
+  sta PPUADDR
   lda #$00
-  sta $2007
-  lda #$22
-  sta $2006
-  lda #$8c
-  sta $2006
+  sta PPUDATA
+  lda #>$228c
+  sta PPUADDR
+  lda #<$228c
+  sta PPUADDR
   lda #$00
-  sta $2007
-  lda #$22
-  sta $2006
-  lda #$cc
-  sta $2006
+  sta PPUDATA
+  lda #>$22cc
+  sta PPUADDR
+  lda #<$22cc
+  sta PPUADDR
   lda #$00
-  sta $2007
+  sta PPUDATA
 
   ; Draw the cursor
   lda tilemap_address
-  sta $2006
+  sta PPUADDR
   lda tilemap_address+1
-  sta $2006
+  sta PPUADDR
   lda #$4c
-  sta $2007
+  sta PPUDATA
 
   jsr reset_scroll
   jsr enable_rendering
@@ -708,17 +719,17 @@ draw_main_menu_cursor:
 
 ; 
 update_tiles:
-  lda #$20
+  lda #>$20c2
   sta tilemap_address
-  lda #$c2
+  lda #<$20c2
   sta tilemap_address+1
   ldx #0
   
   jsr disable_rendering
-  lda #$20
-  sta $2006
-  lda #$c2
-  sta $2006
+  lda #>$20c2
+  sta PPUADDR
+  lda #<$20c2
+  sta PPUADDR
 update_tiles_loop:
   lda tiles, X
   and #%01000000
@@ -754,7 +765,7 @@ update_tiles_loop:
   :
 
   lda param1
-  sta $2007
+  sta PPUDATA
   inx
 
   ; check if we need to change line
@@ -773,9 +784,9 @@ update_tiles_loop:
       inc tilemap_address ; else we add 1 to the high byte
     :
     lda tilemap_address
-    sta $2006
+    sta PPUADDR
     lda tilemap_address+1
-    sta $2006
+    sta PPUADDR
   :
 
   cpx number_of_tiles
@@ -785,63 +796,63 @@ draw_smiley:
   cmp #1
   bne :+
     ; if the player has lost
-    lda #$20
-    sta $2006
-    lda #$4f
-    sta $2006
+    lda #>$204f
+    sta PPUADDR
+    lda #<$204f
+    sta PPUADDR
     lda #$54 ; changer la tile
-    sta $2007
+    sta PPUDATA
     lda #$55 ; ici aussi
-    sta $2007
-    lda #$20
-    sta $2006
-    lda #$6f
-    sta $2006
+    sta PPUDATA
+    lda #>$206f
+    sta PPUADDR
+    lda #<$206f
+    sta PPUADDR
     lda #$64 ; changer la tile
-    sta $2007
+    sta PPUDATA
     lda #$65 ; ici aussi
-    sta $2007
+    sta PPUDATA
     jmp :+++
   :
   lda has_won
   cmp #1
   bne :+
     ; if the player has won
-    lda #$20
-    sta $2006
-    lda #$4f
-    sta $2006
+    lda #>$204f
+    sta PPUADDR
+    lda #<$204f
+    sta PPUADDR
     lda #$56 ; changer la tile
-    sta $2007
+    sta PPUDATA
     lda #$57 ; ici aussi
-    sta $2007
-    lda #$20
-    sta $2006
-    lda #$6f
-    sta $2006
+    sta PPUDATA
+    lda #>$206f
+    sta PPUADDR
+    lda #<$206f
+    sta PPUADDR
     lda #$66 ; changer la tile
-    sta $2007
+    sta PPUDATA
     lda #$67 ; ici aussi
-    sta $2007
+    sta PPUDATA
     jmp :++
   :
     ; if the player hasn't lost & hasn't won
-    lda #$20
-    sta $2006
-    lda #$4f
-    sta $2006
+    lda #>$204f
+    sta PPUADDR
+    lda #<$204f
+    sta PPUADDR
     lda #$52 ; changer la tile
-    sta $2007
+    sta PPUDATA
     lda #$53 ; ici aussi
-    sta $2007
-    lda #$20
-    sta $2006
-    lda #$6f
-    sta $2006
+    sta PPUDATA
+    lda #>$206f
+    sta PPUADDR
+    lda #<$206f
+    sta PPUADDR
     lda #$62 ; changer la tile
-    sta $2007
+    sta PPUDATA
     lda #$63 ; ici aussi
-    sta $2007
+    sta PPUDATA
   :
 
   jsr reset_scroll
@@ -884,7 +895,7 @@ draw_cursor:
   iny
 
   lda #$02
-  sta $4014
+  sta OAMDMA
   rts 
 
 ; Not completely implemented, stucks at 138... why tf??
@@ -1081,7 +1092,7 @@ nmi:
   pha
 
   lda #$00 ; Set SPR-RAM address to 0
-  sta $2003
+  sta OAMADDR
   inc FrameCounter
   ; I cheated! A "second" is 64 frames...
   lda #0
@@ -1116,20 +1127,20 @@ nmi:
 ; Enable background and sprites
 enable_rendering:
   lda #%00011000
-  sta $2001
+  sta PPUMASK
   rts
 
 ; Disable rendering
 disable_rendering:
   lda #%00000000
-  sta $2001
+  sta PPUMASK
   rts
 
 ; Reset scroll coordinates
 reset_scroll:
   lda #$00
-  sta $2005
-  sta $2005
+  sta PPUSCROLL
+  sta PPUSCROLL
   rts
 
 ; Wait for the next vblank

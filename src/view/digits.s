@@ -5,19 +5,19 @@ render_first_digit:
   jsr disable_rendering
 
   ; Top-half
-  lda #$20
-  sta $2006
-  lda #$42
-  sta $2006
+  lda #>$2042
+  sta PPUADDR
+  lda #<$2042
+  sta PPUADDR
   lda param1
-  sta $2007
+  sta PPUDATA
   ; Bottom-half
-  lda #$20
-  sta $2006
-  lda #$62
-  sta $2006
+  lda #>$2062
+  sta PPUADDR
+  lda #<$2062
+  sta PPUADDR
   lda param2
-  sta $2007
+  sta PPUDATA
 
   jsr enable_rendering
   jsr reset_scroll
@@ -30,19 +30,19 @@ render_second_digit:
   jsr disable_rendering
 
   ; Top-half
-  lda #$20
-  sta $2006
-  lda #$43
-  sta $2006
+  lda #>$2043
+  sta PPUADDR
+  lda #<$2043
+  sta PPUADDR
   lda param1
-  sta $2007
+  sta PPUDATA
   ; Bottom-half
-  lda #$20
-  sta $2006
-  lda #$63
-  sta $2006
+  lda #>$2063
+  sta PPUADDR
+  lda #<$2063
+  sta PPUADDR
   lda param2
-  sta $2007
+  sta PPUDATA
 
   jsr enable_rendering
   jsr reset_scroll
@@ -55,19 +55,19 @@ render_third_digit:
   jsr disable_rendering
 
   ; Top-half
-  lda #$20
-  sta $2006
-  lda #$44
-  sta $2006
+  lda #>$2044
+  sta PPUADDR
+  lda #<$2044
+  sta PPUADDR
   lda param1
-  sta $2007
+  sta PPUDATA
   ; Bottom-half
-  lda #$20
-  sta $2006
-  lda #$64
-  sta $2006
+  lda #>$2064
+  sta PPUADDR
+  lda #<$2064
+  sta PPUADDR
   lda param2
-  sta $2007
+  sta PPUDATA
 
   jsr enable_rendering
   jsr reset_scroll
@@ -80,19 +80,19 @@ render_fourth_digit:
   jsr disable_rendering
 
   ; Top-half
-  lda #$20
-  sta $2006
-  lda #$5b
-  sta $2006
+  lda #>$205b
+  sta PPUADDR
+  lda #<$205b
+  sta PPUADDR
   lda param1
-  sta $2007
+  sta PPUDATA
   ; Bottom-half
-  lda #$20
-  sta $2006
-  lda #$7b
-  sta $2006
+  lda #>$207b
+  sta PPUADDR
+  lda #<$207b
+  sta PPUADDR
   lda param2
-  sta $2007
+  sta PPUDATA
 
   jsr enable_rendering
   jsr reset_scroll
@@ -105,19 +105,19 @@ render_fifth_digit:
   jsr disable_rendering
 
   ; Top-half
-  lda #$20
-  sta $2006
-  lda #$5c
-  sta $2006
+  lda #>$205c
+  sta PPUADDR
+  lda #<$205c
+  sta PPUADDR
   lda param1
-  sta $2007
+  sta PPUDATA
   ; Bottom-half
-  lda #$20
-  sta $2006
-  lda #$7c
-  sta $2006
+  lda #>$207c
+  sta PPUADDR
+  lda #<$207c
+  sta PPUADDR
   lda param2
-  sta $2007
+  sta PPUDATA
 
   jsr enable_rendering
   jsr reset_scroll
@@ -130,19 +130,19 @@ render_sixth_digit:
   jsr disable_rendering
 
   ; Top-half
-  lda #$20
-  sta $2006
-  lda #$5d
-  sta $2006
+  lda #>$205d
+  sta PPUADDR
+  lda #<$205d
+  sta PPUADDR
   lda param1
-  sta $2007
+  sta PPUDATA
   ; Bottom-half
-  lda #$20
-  sta $2006
-  lda #$7d
-  sta $2006
+  lda #>$207d
+  sta PPUADDR
+  lda #<$207d
+  sta PPUADDR
   lda param2
-  sta $2007
+  sta PPUDATA
 
   jsr enable_rendering
   jsr reset_scroll
