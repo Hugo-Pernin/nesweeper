@@ -10,7 +10,6 @@
   .byt $00        ; mapper number upper nibble
 
 .segment "ZEROPAGE"
-  avaluebeforenmi: .res 1
   ; Time counters
   FrameCounter: .res 1
   SecondCounter: .res 1
@@ -1074,7 +1073,13 @@ update_clock:
 
 ; Resets FrameCounter and increments SecondCounter every 60 frames
 nmi:
-  sta avaluebeforenmi
+  ; back up registers (important)
+  pha
+  txa
+  pha
+  tya
+  pha
+
   lda #$00 ; Set SPR-RAM address to 0
   sta $2003
   inc FrameCounter
@@ -1099,7 +1104,13 @@ nmi:
     inc SecondCounter
   :
   lda #0
-  lda avaluebeforenmi
+  
+  ; restore regs and exit
+  pla
+  tay
+  pla
+  tax
+  pla
   rti
 
 ; Enable background and sprites
